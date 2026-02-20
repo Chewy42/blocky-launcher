@@ -1,0 +1,47 @@
+/* Copyright © 2026 Favela Tech LLC. All Rights Reserved. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './glass.css';
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  background: #0A0A0F;
+  color: rgba(255, 255, 255, 0.95);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+/* Allow text selection in terminal and inputs */
+.selectable, input, textarea {
+  user-select: text;
+}
+
+/* Remove focus outline in favor of custom styles */
+:focus {
+  outline: none;
+}
+
+/* Wails drag region */
+.titlebar-drag {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.titlebar-no-drag {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
