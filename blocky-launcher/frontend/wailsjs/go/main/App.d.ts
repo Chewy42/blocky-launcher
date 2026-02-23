@@ -41,6 +41,8 @@ export function InstallPluginFromPath(arg1:string):Promise<plugins.Plugin>;
 
 export function IsSignedIn(arg1:string):Promise<boolean>;
 
+export function MarkVoiceGuideReady():Promise<void>;
+
 export function OpenFileDialog():Promise<string>;
 
 export function OpenPluginsFolder():Promise<void>;

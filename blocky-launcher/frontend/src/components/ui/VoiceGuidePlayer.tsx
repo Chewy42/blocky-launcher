@@ -1,5 +1,5 @@
 // Copyright © 2026 Favela Tech LLC. All Rights Reserved.
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../../lib/utils'
 import { useVoiceGuide } from '../../hooks/useVoiceGuide'
@@ -11,6 +11,11 @@ interface VoiceGuidePlayerProps {
   label: string
   /** Auto-play when src mounts. Defaults to false. */
   autoPlay?: boolean
+  /**
+   * Fallback caption text shown when audio is unavailable or the user skips
+   * the voice guide. If omitted, the player simply hides on unavailable/skip.
+   */
+  captions?: string
   className?: string
 }
 
@@ -22,15 +27,21 @@ function formatTime(s: number): string {
 }
 
 /** Compact accessible voice-guide player bar. */
-export function VoiceGuidePlayer({ src, label, autoPlay = false, className }: VoiceGuidePlayerProps) {
+export function VoiceGuidePlayer({ src, label, autoPlay = false, captions, className }: VoiceGuidePlayerProps) {
   const guide = useVoiceGuide(src)
+  const [dismissed, setDismissed] = useState(false)
 
-  // Auto-play once audio becomes ready.
+  // Reset dismissed state whenever the source changes (new onboarding step).
   useEffect(() => {
-    if (autoPlay && guide.state === 'idle') {
+    setDismissed(false)
+  }, [src])
+
+  // Auto-play once audio becomes ready (unless already dismissed).
+  useEffect(() => {
+    if (!dismissed && autoPlay && guide.state === 'idle') {
       guide.play()
     }
-  }, [autoPlay, guide.state]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [autoPlay, guide.state, dismissed]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keyboard shortcut: Space bar toggles play/pause while player is focused.
   const handleKeyDown = useCallback(
@@ -43,8 +54,40 @@ export function VoiceGuidePlayer({ src, label, autoPlay = false, className }: Vo
     [guide],
   )
 
-  // Don't render anything if audio is definitively unavailable (missing file).
-  if (guide.state === 'unavailable') return null
+  const handleSkip = useCallback(() => {
+    guide.pause()
+    setDismissed(true)
+  }, [guide])
+
+  // Show caption fallback when the user dismissed the audio or it is unavailable.
+  if (dismissed || guide.state === 'unavailable') {
+    if (!captions) return null
+    return (
+      <motion.div
+        role="note"
+        aria-label={`Voice guide caption: ${label}`}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className={cn(
+          'flex items-start gap-2.5 rounded-xl px-4 py-3',
+          'bg-white/5 border border-white/10',
+          className,
+        )}
+      >
+        {/* Speech-bubble icon */}
+        <svg
+          className="w-4 h-4 text-white/30 flex-shrink-0 mt-0.5"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M20 2H4a2 2 0 00-2 2v12a2 2 0 002 2h14l4 4V4a2 2 0 00-2-2z" />
+        </svg>
+        <p className="text-xs text-white/50 leading-relaxed">{captions}</p>
+      </motion.div>
+    )
+  }
 
   const isPlaying = guide.state === 'playing'
   const isLoading = guide.state === 'loading'
@@ -169,6 +212,24 @@ export function VoiceGuidePlayer({ src, label, autoPlay = false, className }: Vo
               <path d="M15.54 8.46a5 5 0 010 7.07" />
             </svg>
           )}
+        </button>
+
+        {/* Skip / dismiss button */}
+        <button
+          type="button"
+          aria-label="Skip voice guide"
+          onClick={handleSkip}
+          className={cn(
+            'w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center transition-colors',
+            'hover:bg-white/10 border border-transparent hover:border-white/10',
+            'text-white/30 hover:text-white/50',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-blocky-green/60',
+          )}
+        >
+          {/* × close icon */}
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
         </button>
       </motion.div>
     </AnimatePresence>

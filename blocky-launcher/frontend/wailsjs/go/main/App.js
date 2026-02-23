@@ -70,6 +70,10 @@ export function IsSignedIn(arg1) {
   return window['go']['main']['App']['IsSignedIn'](arg1);
 }
 
+export function MarkVoiceGuideReady() {
+  return window['go']['main']['App']['MarkVoiceGuideReady']();
+}
+
 export function OpenFileDialog() {
   return window['go']['main']['App']['OpenFileDialog']();
 }

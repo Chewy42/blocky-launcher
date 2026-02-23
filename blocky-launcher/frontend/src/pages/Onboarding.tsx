@@ -22,6 +22,16 @@ const STEP_LABELS: Record<Step, string> = {
   done: 'You\'re all set!',
 }
 
+// Fallback captions shown when audio is unavailable or the user skips the guide.
+const STEP_CAPTIONS: Record<Step, string> = {
+  welcome: 'Welcome to BlockyLauncher — the cleanest way to manage and run your Hytale server. Click Get Started to begin.',
+  eula: 'Please review the Terms of Service and Privacy Policy below, then click I Agree to continue.',
+  folder: 'Choose the root folder where your Hytale server is installed so BlockyLauncher can manage it.',
+  java: 'BlockyLauncher needs Java 17 or later to run your server. Click Auto-Detect to find a local installation automatically.',
+  account: 'Sign in to BlockyMarketplace or BlockyNetworks to access your purchased plugins and claimed servers.',
+  done: 'Setup is complete — BlockyLauncher is ready. Click Open BlockyLauncher to get started!',
+}
+
 /**
  * Returns the audio URL for the given step.
  * Files are served from /public/audio/ so Vite passes them through without
@@ -82,6 +92,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               <VoiceGuidePlayer
                 src={audioSrcForStep('welcome')}
                 label={STEP_LABELS.welcome}
+                captions={STEP_CAPTIONS.welcome}
                 autoPlay
                 className="mb-6 text-left"
               />
@@ -101,6 +112,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               <VoiceGuidePlayer
                 src={audioSrcForStep('eula')}
                 label={STEP_LABELS.eula}
+                captions={STEP_CAPTIONS.eula}
                 autoPlay
                 className="mb-4"
               />
@@ -128,6 +140,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               <VoiceGuidePlayer
                 src={audioSrcForStep('folder')}
                 label={STEP_LABELS.folder}
+                captions={STEP_CAPTIONS.folder}
                 autoPlay
                 className="mb-4"
               />
@@ -164,6 +177,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               <VoiceGuidePlayer
                 src={audioSrcForStep('java')}
                 label={STEP_LABELS.java}
+                captions={STEP_CAPTIONS.java}
                 autoPlay
                 className="mb-4"
               />
@@ -194,6 +208,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               <VoiceGuidePlayer
                 src={audioSrcForStep('account')}
                 label={STEP_LABELS.account}
+                captions={STEP_CAPTIONS.account}
                 autoPlay
                 className="mb-4"
               />
@@ -227,10 +242,19 @@ export function Onboarding({ onComplete }: OnboardingProps) {
               <VoiceGuidePlayer
                 src={audioSrcForStep('done')}
                 label={STEP_LABELS.done}
+                captions={STEP_CAPTIONS.done}
                 autoPlay
                 className="mb-6"
               />
-              <GlassButton variant="primary" size="lg" className="w-full justify-center" onClick={onComplete}>
+              <GlassButton
+                variant="primary"
+                size="lg"
+                className="w-full justify-center"
+                onClick={() => {
+                  App.MarkVoiceGuideReady().catch(() => {/* non-critical */})
+                  onComplete()
+                }}
+              >
                 Open BlockyLauncher
               </GlassButton>
             </motion.div>
