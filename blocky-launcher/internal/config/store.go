@@ -58,9 +58,10 @@ type AppConfig struct {
 	Settings      Settings    `json:"settings"`
 	Accounts      Accounts    `json:"accounts"`
 	WindowState   WindowState `json:"windowState"`
-	EULAAccepted  bool        `json:"eulaAccepted"`
-	EULATimestamp string      `json:"eulaTimestamp,omitempty"`
-	FirstLaunch   bool        `json:"firstLaunch"`
+	EULAAccepted     bool        `json:"eulaAccepted"`
+	EULATimestamp    string      `json:"eulaTimestamp,omitempty"`
+	FirstLaunch      bool        `json:"firstLaunch"`
+	VoiceGuideReady  bool        `json:"voice_guide_ready"`
 }
 
 type Store struct {
@@ -220,5 +221,12 @@ func (s *Store) SetFirstLaunchDone() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.config.FirstLaunch = false
+	return s.save()
+}
+
+func (s *Store) SetVoiceGuideReady() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.config.VoiceGuideReady = true
 	return s.save()
 }

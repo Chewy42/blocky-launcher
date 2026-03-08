@@ -135,6 +135,10 @@ func (a *App) AcceptEULA() error {
 	return a.configStore.AcceptEULA(time.Now().Format(time.RFC3339))
 }
 
+func (a *App) MarkVoiceGuideReady() error {
+	return a.configStore.SetVoiceGuideReady()
+}
+
 // ─── Server Folder ────────────────────────────────────────────────────────────
 
 func (a *App) SelectServerFolder() (string, error) {

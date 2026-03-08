@@ -3,12 +3,42 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { App } from '../lib/wails'
 import { GlassButton } from '../components/ui/GlassButton'
+import { VoiceGuidePlayer } from '../components/ui/VoiceGuidePlayer'
 import { useToastStore } from '../store/toastStore'
 
 type Step = 'welcome' | 'eula' | 'folder' | 'java' | 'account' | 'done'
 
 interface OnboardingProps {
   onComplete: () => void
+}
+
+// Human-readable labels used in aria-label and displayed in the player.
+const STEP_LABELS: Record<Step, string> = {
+  welcome: 'Welcome to BlockyLauncher',
+  eula: 'Terms & Privacy',
+  folder: 'Select Server Folder',
+  java: 'Configure Java',
+  account: 'Connect Account',
+  done: 'You\'re all set!',
+}
+
+// Fallback captions shown when audio is unavailable or the user skips the guide.
+const STEP_CAPTIONS: Record<Step, string> = {
+  welcome: 'Welcome to BlockyLauncher — the cleanest way to manage and run your Hytale server. Click Get Started to begin.',
+  eula: 'Please review the Terms of Service and Privacy Policy below, then click I Agree to continue.',
+  folder: 'Choose the root folder where your Hytale server is installed so BlockyLauncher can manage it.',
+  java: 'BlockyLauncher needs Java 17 or later to run your server. Click Auto-Detect to find a local installation automatically.',
+  account: 'Sign in to BlockyMarketplace or BlockyNetworks to access your purchased plugins and claimed servers.',
+  done: 'Setup is complete — BlockyLauncher is ready. Click Open BlockyLauncher to get started!',
+}
+
+/**
+ * Returns the audio URL for the given step.
+ * Files are served from /public/audio/ so Vite passes them through without
+ * hashing; missing files cause the player to silently degrade to null.
+ */
+function audioSrcForStep(step: Step): string {
+  return `/audio/voice-guide-${step}.mp3`
 }
 
 export function Onboarding({ onComplete }: OnboardingProps) {
@@ -58,7 +88,14 @@ export function Onboarding({ onComplete }: OnboardingProps) {
                 </svg>
               </div>
               <h1 className="text-3xl font-bold text-white mb-3">BlockyLauncher</h1>
-              <p className="text-white/55 text-base mb-8">The cleanest way to run your Hytale server.</p>
+              <p className="text-white/55 text-base mb-6">The cleanest way to run your Hytale server.</p>
+              <VoiceGuidePlayer
+                src={audioSrcForStep('welcome')}
+                label={STEP_LABELS.welcome}
+                captions={STEP_CAPTIONS.welcome}
+                autoPlay
+                className="mb-6 text-left"
+              />
               <GlassButton variant="primary" size="lg" className="w-full justify-center" onClick={() => setStep('eula')}>
                 Get Started
               </GlassButton>
@@ -72,6 +109,13 @@ export function Onboarding({ onComplete }: OnboardingProps) {
             <motion.div key="eula" {...slideProps}>
               <h2 className="text-xl font-semibold text-white mb-2">Terms & Privacy</h2>
               <p className="text-white/50 text-sm mb-4">Please review and accept to continue.</p>
+              <VoiceGuidePlayer
+                src={audioSrcForStep('eula')}
+                label={STEP_LABELS.eula}
+                captions={STEP_CAPTIONS.eula}
+                autoPlay
+                className="mb-4"
+              />
               <div className="glass-card p-4 mb-5 max-h-52 overflow-y-auto text-xs text-white/55 leading-relaxed space-y-2">
                 <p><strong className="text-white/80">Copyright © 2026 Favela Tech LLC. All Rights Reserved.</strong></p>
                 <p>BlockyLauncher is provided "as is" without warranty. Favela Tech LLC shall not be liable for data loss or server damage arising from use.</p>
@@ -92,7 +136,14 @@ export function Onboarding({ onComplete }: OnboardingProps) {
           {step === 'folder' && (
             <motion.div key="folder" {...slideProps}>
               <h2 className="text-xl font-semibold text-white mb-2">Select Server Folder</h2>
-              <p className="text-white/50 text-sm mb-5">Choose the root folder of your Hytale server installation.</p>
+              <p className="text-white/50 text-sm mb-4">Choose the root folder of your Hytale server installation.</p>
+              <VoiceGuidePlayer
+                src={audioSrcForStep('folder')}
+                label={STEP_LABELS.folder}
+                captions={STEP_CAPTIONS.folder}
+                autoPlay
+                className="mb-4"
+              />
               <div
                 className="glass-card p-5 mb-4 cursor-pointer hover:border-blocky-green/30 transition-colors text-center"
                 onClick={handleBrowseFolder}
@@ -122,7 +173,14 @@ export function Onboarding({ onComplete }: OnboardingProps) {
           {step === 'java' && (
             <motion.div key="java" {...slideProps}>
               <h2 className="text-xl font-semibold text-white mb-2">Configure Java</h2>
-              <p className="text-white/50 text-sm mb-5">BlockyLauncher needs Java to run your server.</p>
+              <p className="text-white/50 text-sm mb-4">BlockyLauncher needs Java to run your server.</p>
+              <VoiceGuidePlayer
+                src={audioSrcForStep('java')}
+                label={STEP_LABELS.java}
+                captions={STEP_CAPTIONS.java}
+                autoPlay
+                className="mb-4"
+              />
               <GlassButton variant="ghost" className="w-full justify-center mb-3" onClick={handleDetectJava}>
                 Auto-Detect Java
               </GlassButton>
@@ -146,7 +204,14 @@ export function Onboarding({ onComplete }: OnboardingProps) {
           {step === 'account' && (
             <motion.div key="account" {...slideProps}>
               <h2 className="text-xl font-semibold text-white mb-2">Connect Account</h2>
-              <p className="text-white/50 text-sm mb-5">Sign in to load your purchased plugins directly from BlockyMarketplace.</p>
+              <p className="text-white/50 text-sm mb-4">Sign in to load your purchased plugins directly from BlockyMarketplace.</p>
+              <VoiceGuidePlayer
+                src={audioSrcForStep('account')}
+                label={STEP_LABELS.account}
+                captions={STEP_CAPTIONS.account}
+                autoPlay
+                className="mb-4"
+              />
               <div className="space-y-3 mb-4">
                 <GlassButton variant="primary" className="w-full justify-center" onClick={() => {
                   App.GetMarketplaceAuthURL().then((url) => App.OpenURL(url))
@@ -173,8 +238,23 @@ export function Onboarding({ onComplete }: OnboardingProps) {
                 </svg>
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">All Set!</h2>
-              <p className="text-white/50 text-sm mb-8">BlockyLauncher is ready to use.</p>
-              <GlassButton variant="primary" size="lg" className="w-full justify-center" onClick={onComplete}>
+              <p className="text-white/50 text-sm mb-5">BlockyLauncher is ready to use.</p>
+              <VoiceGuidePlayer
+                src={audioSrcForStep('done')}
+                label={STEP_LABELS.done}
+                captions={STEP_CAPTIONS.done}
+                autoPlay
+                className="mb-6"
+              />
+              <GlassButton
+                variant="primary"
+                size="lg"
+                className="w-full justify-center"
+                onClick={() => {
+                  App.MarkVoiceGuideReady().catch(() => {/* non-critical */})
+                  onComplete()
+                }}
+              >
                 Open BlockyLauncher
               </GlassButton>
             </motion.div>

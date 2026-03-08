@@ -134,11 +134,12 @@ export namespace config {
 	    eulaAccepted: boolean;
 	    eulaTimestamp?: string;
 	    firstLaunch: boolean;
-	
+	    voice_guide_ready: boolean;
+
 	    static createFrom(source: any = {}) {
 	        return new AppConfig(source);
 	    }
-	
+
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.version = source["version"];
@@ -150,6 +151,7 @@ export namespace config {
 	        this.eulaAccepted = source["eulaAccepted"];
 	        this.eulaTimestamp = source["eulaTimestamp"];
 	        this.firstLaunch = source["firstLaunch"];
+	        this.voice_guide_ready = source["voice_guide_ready"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
