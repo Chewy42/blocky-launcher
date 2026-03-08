@@ -23,6 +23,7 @@ export interface VoiceGuideControls {
  */
 export function useVoiceGuide(src: string | null): VoiceGuideControls {
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const mutedRef = useRef(false)
   const [state, setState] = useState<VoiceGuideState>('idle')
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -37,6 +38,7 @@ export function useVoiceGuide(src: string | null): VoiceGuideControls {
 
     const audio = new Audio()
     audioRef.current = audio
+    audio.muted = mutedRef.current
 
     setState('loading')
     setCurrentTime(0)
@@ -103,6 +105,7 @@ export function useVoiceGuide(src: string | null): VoiceGuideControls {
   }, [])
 
   const setMuted = useCallback((value: boolean) => {
+    mutedRef.current = value
     if (audioRef.current) audioRef.current.muted = value
     setMutedState(value)
   }, [])
