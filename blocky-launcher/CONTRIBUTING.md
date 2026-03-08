@@ -96,7 +96,8 @@ Open a GitHub issue before starting on:
 
 ## Code of Conduct
 
-Be respectful and constructive. We follow the [Contributor Covenant](https://www.contributor-covenant.org/) Code of Conduct.
+Be respectful and constructive. This project follows the
+[Code of Conduct](../CODE_OF_CONDUCT.md).
 
 Violations may be reported to: conduct@blockymarketplace.com
 
