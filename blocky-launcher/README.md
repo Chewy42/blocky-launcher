@@ -151,10 +151,12 @@ The MIT license applies to the source code. The BlockyLauncher, BlockyMarketplac
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and
+[../CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) for community expectations.
 
 ## Security
 
-To report a security vulnerability, email: **security@blockymarketplace.com**
+Please review [../SECURITY.md](../SECURITY.md) before reporting vulnerabilities.
 
+To report a security vulnerability, email: **security@blockymarketplace.com**.
 Do not open a public GitHub issue for security vulnerabilities.
